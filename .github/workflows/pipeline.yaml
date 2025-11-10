@@ -48,9 +48,9 @@ jobs:
       - name: Run Producer
         run: python producer.py
         env:
-          KAFKA_BOOTSTRAP: localhost:9092
+          KAFKA_BOOTSTRAP: ${{ secrets.KAFKA_BOOTSTRAP }}
 
       - name: Run Consumer
         run: python consumer.py
         env:
-          KAFKA_BOOTSTRAP: localhost:9092
+          KAFKA_BOOTSTRAP: ${{ secrets.KAFKA_BOOTSTRAP }}
