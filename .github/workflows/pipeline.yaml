@@ -7,7 +7,21 @@ jobs:
   run-etl:
     runs-on: ubuntu-latest
 
-    env:  # secrets átadása környezeti változóként
+    services:
+      zookeeper:
+        image: wurstmeister/zookeeper
+        ports:
+          - 2181:2181
+
+      kafka:
+        image: wurstmeister/kafka
+        ports:
+          - 9092:9092
+        env:
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
+    env:
       SF_USER: ${{ secrets.SF_USER }}
       SF_PASSWORD: ${{ secrets.SF_PASSWORD }}
       SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
