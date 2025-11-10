@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 
 import json
+import os
 import time
 import uuid
 from random import choice, randint, uniform
 from datetime import datetime, timezone
 from confluent_kafka import Producer
 from faker import Faker
+
+KAFKA_BOOTSTRAP = os.getenv('KAFKA_BOOTSTRAP')
+KAFKA_TOPIC = os.getenv('KAFKA_TOPIC')
 
 fake = Faker()
 
@@ -18,18 +22,15 @@ def delivery_callback(err, msg):
         print(f"Produced to topic {msg.topic()}: key={msg.key().decode('utf-8')} value={msg.value().decode('utf-8')}")
 
 # Kafka producer config
-config = {
-    'bootstrap.servers': 'localhost:65414',
+producer = Producer({
+    'bootstrap.servers': KAFKA_BOOTSTRAP,
     'compression.type': 'none',
     'batch.size': 15000,
     'retries': 5,
     'max.in.flight.requests.per.connection': 5,
     'enable.idempotence': True,
     'acks': 'all',
-}
-producer = Producer(config)
-
-topic = 'purchases'
+})
 
 EVENT_TYPES = ['view', 'add_to_cart', 'purchase']
 PRODUCTS = ['book', 'alarm clock', 't-shirts', 'gift card', 'batteries', 'headphones', 'mug']
@@ -61,7 +62,7 @@ def produce_events(n=50, delay=0.05):
         event = generate_event()
 
         producer.produce(
-            topic=topic,
+            topic=KAFKA_TOPIC,
             key=event['user_id'].encode('utf-8'),
             value=json.dumps(event).encode('utf-8'),
             callback=delivery_callback
@@ -70,7 +71,7 @@ def produce_events(n=50, delay=0.05):
         producer.poll(0.1)
         time.sleep(delay)
     producer.flush()
-    print(f"{n} events produced successfully to topic '{topic}'")
+    print(f"{n} events produced successfully to topic '{KAFKA_TOPIC}'")
 
 if __name__ == '__main__':
     produce_events(n=100, delay=0.02)
