@@ -1,0 +1,37 @@
+name: ETL Pipeline
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-etl:
+    runs-on: ubuntu-latest
+
+    env:  # secrets átadása környezeti változóként
+      SF_USER: ${{ secrets.SF_USER }}
+      SF_PASSWORD: ${{ secrets.SF_PASSWORD }}
+      SF_ACCOUNT: ${{ secrets.SF_ACCOUNT }}
+      SF_WAREHOUSE: ${{ secrets.SF_WAREHOUSE }}
+      SF_DATABASE: ${{ secrets.SF_DATABASE }}
+      SF_SCHEMA: ${{ secrets.SF_SCHEMA }}
+      KAFKA_BOOTSTRAP: ${{ secrets.KAFKA_BOOTSTRAP }}
+      KAFKA_TOPIC: ${{ secrets.KAFKA_TOPIC }}
+      KAFKA_GROUP: ${{ secrets.KAFKA_GROUP }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Producer
+        run: python producer.py
+
+      - name: Run Consumer
+        run: python consumer.py
