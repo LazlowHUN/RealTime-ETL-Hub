@@ -18,8 +18,11 @@ jobs:
         ports:
           - 9092:9092
         env:
-          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_BROKER_ID: 1
           KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+          KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
     env:
       SF_USER: ${{ secrets.SF_USER }}
@@ -28,13 +31,11 @@ jobs:
       SF_WAREHOUSE: ${{ secrets.SF_WAREHOUSE }}
       SF_DATABASE: ${{ secrets.SF_DATABASE }}
       SF_SCHEMA: ${{ secrets.SF_SCHEMA }}
-      KAFKA_BOOTSTRAP: ${{ secrets.KAFKA_BOOTSTRAP }}
       KAFKA_TOPIC: ${{ secrets.KAFKA_TOPIC }}
       KAFKA_GROUP: ${{ secrets.KAFKA_GROUP }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -46,6 +47,10 @@ jobs:
 
       - name: Run Producer
         run: python producer.py
+        env:
+          KAFKA_BOOTSTRAP: kafka:9092
 
       - name: Run Consumer
         run: python consumer.py
+        env:
+          KAFKA_BOOTSTRAP: kafka:9092
