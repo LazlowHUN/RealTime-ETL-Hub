@@ -1,3 +1,4 @@
 confluent-kafka
 snowflake-connector-python
 faker
+python-dotenv
