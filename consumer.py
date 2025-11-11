@@ -56,11 +56,14 @@ def run_consumer(batch_size=100):
             buffer.append(event)
 
             if len(buffer) >= batch_size:
-                for e in buffer:
-                    cs.execute(
-                        "INSERT INTO EVENTS_JSON(EVENT_ID, RAW_DATA) VALUES (%s, TO_VARIANT(%s))",
-                        (e['event_id'], json.dumps(e))
-                    )
+                rows = [(e['event_id'], json.dumps(e)) for e in buffer]
+                cs.executemany(
+                    """
+                    INSERT INTO EVENTS_JSON (EVENT_ID, RAW_DATA)
+                    VALUES (%s, PARSE_JSON(%s))
+                    """,
+                    rows
+                )
                 conn.commit()
                 print(f"{len(buffer)} events inserted")
                 buffer.clear()
