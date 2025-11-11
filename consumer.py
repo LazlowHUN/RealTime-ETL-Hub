@@ -2,8 +2,11 @@
 
 import os
 import json
+from dotenv import load_dotenv
 from confluent_kafka import Consumer, KafkaError
 from snowflake.connector import connect
+
+load_dotenv()
 
 KAFKA_BOOTSTRAP = os.getenv('KAFKA_BOOTSTRAP')
 KAFKA_TOPIC = os.getenv('KAFKA_TOPIC')
@@ -58,7 +61,7 @@ def run_consumer(batch_size=100):
             if len(buffer) >= batch_size:
                 for e in buffer:
                     cs.execute(
-                        "INSERT INTO RAW.EVENTS_JSON(EVENT_ID, RAW_DATA) VALUES (%s, TO_VARIANT(%s))",
+                        "INSERT INTO RAW.EVENTS_JSON(EVENT_ID, RAW_DATA) SELECT %s, PARSE_JSON(%s)",
                         (e['event_id'], json.dumps(e))
                     )
                 conn.commit()

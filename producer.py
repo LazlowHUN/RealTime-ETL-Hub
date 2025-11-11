@@ -5,9 +5,12 @@ import os
 import time
 import uuid
 from random import choice, randint, uniform
+from dotenv import load_dotenv
 from datetime import datetime, timezone
 from confluent_kafka import Producer
 from faker import Faker
+
+load_dotenv()
 
 KAFKA_BOOTSTRAP = os.getenv('KAFKA_BOOTSTRAP')
 KAFKA_TOPIC = os.getenv('KAFKA_TOPIC')
