@@ -1,0 +1,7 @@
+confluent-kafka
+snowflake-connector-python
+faker
+python-dotenv
+apache-airflow
+dbt-snowflake
+dbt-core
