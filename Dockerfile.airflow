@@ -1,0 +1,14 @@
+FROM apache/airflow:2.8.0-python3.11
+
+USER root
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+USER airflow
+
+# dbt + Snowflake adapter
+RUN pip install --no-cache-dir \
+    "dbt-core==1.8.4" \
+    "dbt-snowflake==1.8.4"
