@@ -10,7 +10,7 @@ with base as (
         date(ts) as event_date,
         price,
         quantity
-    from {{ ref('stg_events_flat') }}
+    from {{ ref('stg_events') }}
     where is_valid
 ),
 

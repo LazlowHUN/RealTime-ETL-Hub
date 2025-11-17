@@ -22,7 +22,7 @@ def dbt_snowflake_pipeline():
     @task
     def run_dbt_staging():
         """
-        Staging réteg feltöltése dbt-vel (STAGING.EVENTS_FLAT).
+        Runs dbt models tagged as `staging` to build the staging layer
         """
         cmd = [
             "dbt",
@@ -36,6 +36,26 @@ def dbt_snowflake_pipeline():
         ]
         subprocess.run(cmd, check=True)
 
-    run_dbt_staging()
+    @task
+    def run_dbt_marts():
+        """
+        Runs all dbt models tagged as `marts` to build the data mart layer
+        """
+        cmd = [
+            "dbt",
+            "run",
+            "--project-dir",
+            "/dbt_project",
+            "--profiles-dir",
+            "/home/airflow/.dbt",
+            "--select",
+            "tag:marts",
+        ]
+        subprocess.run(cmd, check=True)
+
+    s_run = run_dbt_staging()
+    m_run = run_dbt_marts()
+
+    s_run >> m_run
 
 dbt_snowflake_pipeline()
