@@ -1,0 +1,15 @@
+name: "kafka_snowflake_dbt"
+version: "1.0.0"
+profile: "my_snowflake_profile"
+
+models:
+  kafka_snowflake_dbt:
+    +materialized: view
+
+    staging:
+      +schema: "STAGING"
+      +tags: ["staging"]
+
+    marts:
+      +schema: "MARTS"
+      +tags: ["marts"]
