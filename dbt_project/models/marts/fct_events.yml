@@ -1,0 +1,33 @@
+models:
+  - name: fct_events
+    description: "Aggregated event fact table at the user × event_type × day level"
+    tests:
+      - unique:
+          column_name: ['user_id', 'event_type', 'event_date']
+
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+
+      - name: event_type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["view", "add_to_cart", "purchase"]
+
+      - name: event_date
+        tests:
+          - not_null
+
+      - name: event_count
+        tests:
+          - not_null
+
+      - name: total_quantity
+        tests:
+          - not_null
+
+      - name: total_revenue
+        tests:
+          - not_null
