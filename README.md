@@ -29,7 +29,7 @@ Example event:
 
 A Kafka consumer persists events into Snowflake RAW.
 
-### 1. Snowflake RAW Layer
+### 2. Snowflake RAW Layer
 Stores unmodified ingestion-ready data:
 
 | Column  | Type | Description |
@@ -37,3 +37,37 @@ Stores unmodified ingestion-ready data:
 | EVENT_ID  | VARCHAR  | Unique event ID |
 | RAW_DATA  | VARIANT  | Full JSON payload |
 | RECEIVED_AT  | TIMESTAMP_NTZ  | Ingestion timestamp |
+
+This layer acts as the immutable "source of truth".
+
+### 3. dbt Staging Layer
+Model: stg_events.sql
+
+Purpose:
+
+* Flatten the JSON from RAW layer
+* Cast and clean fields
+* Validate event structure
+* Add quality flags (is_valid, error_reason)
+
+Example logic includes:
+
+```
+select
+  raw_data:event_id::string as event_id,
+  raw_data:event_type::string as event_type,
+  raw_data:user_id::string as user_id,
+  ...
+  received_at as ts,
+  raw_data as raw_payload,
+  true as is_valid
+from raw.events_json
+```
+
+dbt Tests Included:
+
+✔ unique (event_id)
+✔ not_null (key fields)
+✔ accepted_values (event_type)
+✔ data integrity checks
+
