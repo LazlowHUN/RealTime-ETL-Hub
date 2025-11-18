@@ -66,8 +66,63 @@ from raw.events_json
 
 dbt Tests Included:
 
-✔ unique (event_id)
-✔ not_null (key fields)
-✔ accepted_values (event_type)
-✔ data integrity checks
+* unique (event_id)
+* not_null (key fields)
+* accepted_values (event_type)
+* data integrity checks
 
+### 4. dbt MARTS Layer
+Business-ready analytics tables.
+
+Model: fct_events.sql
+
+Aggregates metrics per event type and user:
+
+```
+select
+  date(ts) as event_date,
+  event_type,
+  user_id,
+  count(*) as event_count,
+  sum(quantity) as total_quantity,
+  sum(price * quantity) as total_revenue
+from {{ ref('stg_events') }}
+where is_valid = true
+group by 1,2,3
+```
+
+Use cases:
+
+* Funnel metrics
+* Revenue analysis
+* User behaviour analytics
+* Product performance
+
+### 5. Airflow Orchestration
+DAG: etl_dbt_pipeline
+
+Tasks:
+
+1. Run dbt staging
+Builds staging models.
+
+2. Run dbt tests (staging)
+Ensures data quality before loading marts.
+
+4. Run dbt marts
+Builds fact models.
+
+5. Run dbt tests (marts)
+Validates aggregated data.
+
+### 6. dbt Documentation UI
+Features:
+
+* Interactive lineage graph
+* Model & column-level documentation
+* Built-in test visibility
+* SQL preview
+* Tables grouped by schema (RAW, STAGING, MARTS)
+
+Exposed via:
+👉 http://localhost:8082
