@@ -19,6 +19,10 @@ default_args = {
 )
 def dbt_snowflake_pipeline():
 
+    # -------------------------------
+    # STAGING MODELS
+    # -------------------------------
+
     @task
     def run_dbt_staging():
         """
@@ -35,6 +39,27 @@ def dbt_snowflake_pipeline():
             "tag:staging",
         ]
         subprocess.run(cmd, check=True)
+    
+    @task
+    def test_dbt_staging():
+        """
+        Executes dbt tests for staging models (data quality checks).
+        """
+        cmd = [
+            "dbt",
+            "test",
+            "--project-dir",
+            "/dbt_project",
+            "--profiles-dir",
+            "/home/airflow/.dbt",
+            "--select",
+            "tag:staging",
+        ]
+        subprocess.run(cmd, check=True)
+
+    # -------------------------------
+    # MARTS MODELS
+    # -------------------------------
 
     @task
     def run_dbt_marts():
@@ -53,9 +78,32 @@ def dbt_snowflake_pipeline():
         ]
         subprocess.run(cmd, check=True)
 
-    s_run = run_dbt_staging()
-    m_run = run_dbt_marts()
+    @task
+    def test_dbt_marts():
+        """
+        Executes dbt tests for marts models (business logic quality checks).
+        """
+        cmd = [
+            "dbt",
+            "test",
+            "--project-dir",
+            "/dbt_project",
+            "--profiles-dir",
+            "/home/airflow/.dbt",
+            "--select",
+            "tag:marts",
+        ]
+        subprocess.run(cmd, check=True)
 
-    s_run >> m_run
+    # ---------------------------------------
+    # PIPELINE DEPENDENCY STRUCTURE (DAG)
+    # ---------------------------------------
+
+    s_run = run_dbt_staging()
+    s_test = test_dbt_staging()
+    m_run = run_dbt_marts()
+    m_test = test_dbt_marts()
+
+    s_run >> s_test >> m_run >> m_test
 
 dbt_snowflake_pipeline()
