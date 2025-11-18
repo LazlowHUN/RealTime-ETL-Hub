@@ -27,9 +27,17 @@ Example event:
 }
 ```
 
+Exposed via (Kafka UI):
+👉 http://localhost:8080
+
+<img width="1895" height="353" alt="image" src="https://github.com/user-attachments/assets/b7a87661-79a6-4352-8113-b1a12ebcc86b" />
+
 A Kafka consumer persists events into Snowflake RAW.
 
 ### 2. Snowflake RAW Layer
+
+<img width="305" height="341" alt="image" src="https://github.com/user-attachments/assets/62765463-a21f-4d30-aae9-905cfed6e0b9" />
+
 Stores unmodified ingestion-ready data:
 
 | Column  | Type | Description |
@@ -38,9 +46,11 @@ Stores unmodified ingestion-ready data:
 | RAW_DATA  | VARIANT  | Full JSON payload |
 | RECEIVED_AT  | TIMESTAMP_NTZ  | Ingestion timestamp |
 
+<img width="1270" height="117" alt="image" src="https://github.com/user-attachments/assets/af33ed91-5353-4653-b393-f032cccfb923" />
+
 This layer acts as the immutable "source of truth".
 
-### 3. dbt Staging Layer
+### 3. Snowflake - dbt Staging Layer
 Model: stg_events.sql
 
 Purpose:
@@ -71,7 +81,9 @@ dbt Tests Included:
 * accepted_values (event_type)
 * data integrity checks
 
-### 4. dbt MARTS Layer
+<img width="1461" height="121" alt="image" src="https://github.com/user-attachments/assets/c2e90b22-fe0a-4504-88b0-dc37f213799f" />
+
+### 4. Snowflake - dbt MARTS Layer
 Business-ready analytics tables.
 
 Model: fct_events.sql
@@ -98,8 +110,12 @@ Use cases:
 * User behaviour analytics
 * Product performance
 
+<img width="877" height="122" alt="image" src="https://github.com/user-attachments/assets/105b520c-7537-4943-8799-0080f9b9b55c" />
+
 ### 5. Airflow Orchestration
 DAG: etl_dbt_pipeline
+
+<img width="1903" height="772" alt="image" src="https://github.com/user-attachments/assets/61503600-7d16-4db6-bd72-297b6a4a324e" />
 
 Tasks:
 
@@ -115,7 +131,13 @@ Builds fact models.
 5. Run dbt tests (marts)
 Validates aggregated data.
 
+Exposed via:
+👉 http://localhost:8081
+
 ### 6. dbt Documentation UI
+
+<img width="1902" height="930" alt="image" src="https://github.com/user-attachments/assets/3a89800c-d937-41e1-bd2b-950ae18d2a51" />
+
 Features:
 
 * Interactive lineage graph
