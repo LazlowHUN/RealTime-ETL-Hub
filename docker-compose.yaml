@@ -121,6 +121,26 @@ services:
     networks:
       - kafkanet
 
+  dbt-docs:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+    container_name: dbt-docs
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./dbt_project:/dbt_project
+      - ./dbt_project/profiles.yml:/home/airflow/.dbt/profiles.yml
+    depends_on:
+      - airflow-scheduler
+    command: >
+      bash -c "cd /dbt_project &&
+               dbt docs generate &&
+               dbt docs serve --host 0.0.0.0 --port 8080"
+    networks:
+      - kafkanet
+
+
 networks:
   kafkanet:
     driver: bridge
