@@ -6,6 +6,8 @@ This project demonstrates a modern, production-grade data engineering architectu
 
 ## 🧱 Architecture Overview
 
+![etl diagram](https://github.com/user-attachments/assets/ddd899b0-38a9-41d2-ab51-aa4d6527212b)
+
 ## 📦 Key Components
 ### 1. Kafka Event Streaming
 A Python Kafka producer generates synthetic user interaction events (e.g., view, add_to_cart, purchase) and publishes them to a Kafka topic.
