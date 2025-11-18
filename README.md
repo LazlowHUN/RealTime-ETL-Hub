@@ -27,3 +27,13 @@ Example event:
 }
 ```
 
+A Kafka consumer persists events into Snowflake RAW.
+
+### 1. Snowflake RAW Layer
+Stores unmodified ingestion-ready data:
+
+| Column  | Type | Description |
+| ------------- | ------------- | ------------- |
+| EVENT_ID  | VARCHAR  | Unique event ID |
+| RAW_DATA  | VARIANT  | Full JSON payload |
+| RECEIVED_AT  | TIMESTAMP_NTZ  | Ingestion timestamp |
